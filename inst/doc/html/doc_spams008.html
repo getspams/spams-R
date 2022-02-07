@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="generator" content="hevea 2.23">
+
+<META name="Author" content="Julien Mairal">
+<link rel="stylesheet" href="doc_spams.css"><link rel="stylesheet" type="text/css" href="doc_spams.css">
+<title>Miscellaneous Functions</title>
+</head>
+<body>
+<a href="doc_spams007.html"><img src="previous_motif.gif" alt="Previous"></a>
+<a href="index.html"><img src="contents_motif.gif" alt="Up"></a>
+<a href="doc_spams009.html"><img src="next_motif.gif" alt="Next"></a>
+<hr>
+<h2 class="section" id="sec48">7  Miscellaneous Functions</h2>
+<ul>
+<li><a href="doc_spams008.html#sec49">Function spams.conjGrad</a>
+</li><li><a href="doc_spams008.html#sec50">Function spams.bayer</a>
+</li><li><a href="doc_spams008.html#sec51">Function spams.calcAAt</a>
+</li><li><a href="doc_spams008.html#sec52">Function spams.calcXAt</a>
+</li><li><a href="doc_spams008.html#sec53">Function spams.calcXY</a>
+</li><li><a href="doc_spams008.html#sec54">Function spams.calcXYt</a>
+</li><li><a href="doc_spams008.html#sec55">Function spams.calcXtY</a>
+</li><li><a href="doc_spams008.html#sec56">Function spams.invSym</a>
+</li><li><a href="doc_spams008.html#sec57">Function spams.normalize</a>
+</li><li><a href="doc_spams008.html#sec58">Function spams.sort</a>
+</li><li><a href="doc_spams008.html#sec59">Function displayPatches</a>
+</li><li><a href="doc_spams008.html#sec60">Function spams.countPathsDAG</a>
+</li><li><a href="doc_spams008.html#sec61">Function spams.removeCyclesGraph</a>
+</li><li><a href="doc_spams008.html#sec62">Function spams.countConnexComponents</a>
+</li><li><a href="doc_spams008.html#sec63">Function spams.graphOfGroupStruct</a>
+</li><li><a href="doc_spams008.html#sec64">Function spams.groupStructOfString</a>
+</li><li><a href="doc_spams008.html#sec65">Function spams.readGroupStruct</a>
+</li><li><a href="doc_spams008.html#sec66">Function spams.treeOfGroupStruct</a>
+</li><li><a href="doc_spams008.html#sec67">Function spams.simpleGroupTree</a>
+</li></ul>
+<h3 class="subsection" id="sec49">7.1  Function spams.conjGrad</h3>
+<p>Implementation of a conjugate gradient for solving a linear system <span class="c009">Ax</span>=<span class="c009">b</span>
+when <span class="c009">A</span> is positive definite. In some cases, it is faster than the Matlab
+function <code>pcg</code>, especially when the library uses the Intel Math Kernel Library.
+</p><table class="lstframe c011"><tr><td class="mouselstlisting"><span class="c001">#<br>
+# Name: spams.conjGrad<br>
+#<br>
+# Usage: spams.conjGrad(A,b,x0 = NULL,tol = 1e-10,itermax = NULL)<br>
+#<br>
+# Description:<br>
+#     Conjugate gradient algorithm, sometimes faster than the <br>
+#    equivalent R function solve. In order to solve Ax=b;<br>
+#<br>
+# Inputs:<br>
+#       A:  double square n x n matrix. HAS TO BE POSITIVE DEFINITE<br>
+#       b:  double vector of length n.<br>
+#       x0: double vector of length n. (optional) initial guess.<br>
+#       tol: (optional) tolerance.<br>
+#       itermax: (optional) maximum number of iterations.<br>
+#<br>
+# Output:<br>
+#       x: double vector of length n.<br>
+#<br>
+# Authors:<br>
+# Julien MAIRAL, 2009 (spams, matlab interface and documentation)<br>
+# Jean-Paul CHIEZE 2011-2012 (R interface)<br>
+#</span></td></tr>
+</table><p>
+The following piece of code illustrates how to use this function.
+The following piece of code contains usage examples:
+</p><table class="lstframe c011"><tr><td class="mouselstlisting">library(spams)<br>
+A = matrix(rnorm(500 * 5000),nrow = 5000,ncol = 500)<br>
+A = t(A) %*% A<br>
+b = <span class="c002">as</span>.vector(rep(1,ncol(A)))<br>
+x0 = b<br>
+tol = 1e-4<br>
+itermax = floor(0.5 * length(b))<br>
+CGtest &lt;- function(txt,expr) {<br>
+  tic = proc.time()<br>
+  for (i in 1:20)<br>
+    y = eval(expr)<br>
+  tac = proc.time()<br>
+  <span class="c002">cat</span>(sprintf(<span class="c003">"  Time (%s): %f\n"</span>,txt,(tac - tic)[[<span class="c003">'user.self'</span>]]))<br>
+  x1 = <span class="c002">abs</span>(b - (A %*% y))<br>
+  <span class="c002">cat</span>(sprintf(<span class="c003">"Mean error on b : %f\n\n"</span>,sum(x1) / length(b)))<br>
+}<br>
+y2 = CGtest(<span class="c003">"R"</span>,quote(solve(A,b)))<br>
+y1 = CGtest(<span class="c003">"spams"</span>,quote(spams.conjGrad(A,b,x0,tol,itermax)))</td></tr>
+</table>
+<h3 class="subsection" id="sec50">7.2  Function spams.bayer</h3>
+<p>Apply a Bayer pattern to an input image
+</p><table class="lstframe c011"><tr><td class="mouselstlisting"><span class="c001">#<br>
+# Name: spams.conjGrad<br>
+#<br>
+# Usage: spams.conjGrad(A,b,x0 = NULL,tol = 1e-10,itermax = NULL)<br>
+#<br>
+# Description:<br>
+#     Conjugate gradient algorithm, sometimes faster than the <br>
+#    equivalent R function solve. In order to solve Ax=b;<br>
+#<br>
+# Inputs:<br>
+#       A:  double square n x n matrix. HAS TO BE POSITIVE DEFINITE<br>
+#       b:  double vector of length n.<br>
+#       x0: double vector of length n. (optional) initial guess.<br>
+#       tol: (optional) tolerance.<br>
+#       itermax: (optional) maximum number of iterations.<br>
+#<br>
+# Output:<br>
+#       x: double vector of length n.<br>
+#<br>
+# Authors:<br>
+# Julien MAIRAL, 2009 (spams, matlab interface and documentation)<br>
+# Jean-Paul CHIEZE 2011-2012 (R interface)<br>
+#</span></td></tr>
+</table><p>
+The following piece of code illustrates how to use this function.
+The following piece of code contains usage examples:
+</p><table class="lstframe c011"><tr><td class="mouselstlisting">library(spams)<br>
+A = matrix(rnorm(500 * 5000),nrow = 5000,ncol = 500)<br>
+A = t(A) %*% A<br>
+b = <span class="c002">as</span>.vector(rep(1,ncol(A)))<br>
+x0 = b<br>
+tol = 1e-4<br>
+itermax = floor(0.5 * length(b))<br>
+CGtest &lt;- function(txt,expr) {<br>
+  tic = proc.time()<br>
+  for (i in 1:20)<br>
+    y = eval(expr)<br>
+  tac = proc.time()<br>
+  <span class="c002">cat</span>(sprintf(<span class="c003">"  Time (%s): %f\n"</span>,txt,(tac - tic)[[<span class="c003">'user.self'</span>]]))<br>
+  x1 = <span class="c002">abs</span>(b - (A %*% y))<br>
+  <span class="c002">cat</span>(sprintf(<span class="c003">"Mean error on b : %f\n\n"</span>,sum(x1) / length(b)))<br>
+}<br>
+y2 = CGtest(<span class="c003">"R"</span>,quote(solve(A,b)))<br>
+y1 = CGtest(<span class="c003">"spams"</span>,quote(spams.conjGrad(A,b,x0,tol,itermax)))</td></tr>
+</table>
+<h3 class="subsection" id="sec51">7.3  Function spams.calcAAt</h3>
+<p>For an input sparse matrix <span class="c009">A</span>, this function returns <span class="c009">AA</span><sup><span class="c007">T</span></sup>. For some reasons, when <span class="c009">A</span> has a lot more columns than rows, this function can be much faster than the equivalent Matlab command <code>X*A'</code>.
+</p><table class="lstframe c011"><tr><td class="mouselstlisting"><span class="c001">#<br>
+# Name: spams.calcAAt<br>
+#<br>
+# Usage: spams.calcAAt(A)<br>
+#<br>
+# Description:<br>
+#     Compute efficiently AAt = A*A', when A is sparse <br>
+#   and has a lot more columns than rows. In some cases, it is<br>
+#   up to 20 times faster than the equivalent R expression<br>
+#   AAt=A*A';<br>
+#<br>
+# Inputs:<br>
+#       A:  double sparse m x n matrix   <br>
+#<br>
+# Output:<br>
+#       AAt: double m x m matrix <br>
+#<br>
+# Authors:<br>
+# Julien MAIRAL, 2009 (spams, matlab interface and documentation)<br>
+# Jean-Paul CHIEZE 2011-2012 (R interface)<br>
+#</span></td></tr>
+</table><p>
+The following piece of code illustrates how to use this function.
+The following piece of code contains usage examples:
+</p><table class="lstframe c011"><tr><td class="mouselstlisting">library(spams)<br>
+m = 200;n = 200000; d= 0.05<br>
+A = rSpMatrix(m,n,floor(m * n * d))<br>
+spams.calcAAt(A)</td></tr>
+</table>
+<h3 class="subsection" id="sec52">7.4  Function spams.calcXAt</h3>
+<p>
+For an input sparse matrix <span class="c009">A</span> and a matrix <span class="c009">X</span>, this function returns <span class="c009">XA</span><sup><span class="c007">T</span></sup>. For some reasons, when <span class="c009">A</span> has a lot more columns than rows, this function can be much faster than the equivalent Matlab command <code>X*A'</code>.
+</p><table class="lstframe c011"><tr><td class="mouselstlisting"><span class="c001">#<br>
+# Name: spams.calcXAt<br>
+#<br>
+# Usage: spams.calcXAt(X,A)<br>
+#<br>
+# Description:<br>
+#     Compute efficiently XAt = X*A', when A is sparse and has a <br>
+#   lot more columns than rows. In some cases, it is up to 20 times <br>
+#   faster than the equivalent R expression;<br>
+#<br>
+# Inputs:<br>
+#       X:  double m x n matrix<br>
+#       A:  double sparse p x n matrix   <br>
+#<br>
+# Output:<br>
+#       XAt: double m x p matrix <br>
+#<br>
+# Authors:<br>
+# Julien MAIRAL, 2009 (spams, matlab interface and documentation)<br>
+# Jean-Paul CHIEZE 2011-2012 (R interface)<br>
+#</span></td></tr>
+</table><p>
+The following piece of code illustrates how to use this function.
+The following piece of code contains usage examples:
+</p><table class="lstframe c011"><tr><td class="mouselstlisting">library(spams)<br>
+m = 200;n = 200000; d= 0.05<br>
+A = rSpMatrix(m,n,floor(m * n * d))<br>
+X = matrix(rnorm(64 * n),nrow = 64,ncol = n)<br>
+spams.calcXAt(X,A)</td></tr>
+</table>
+<h3 class="subsection" id="sec53">7.5  Function spams.calcXY</h3>
+<p>
+For two input matrices <span class="c009">X</span> and <span class="c009">Y</span>, this function returns <span class="c009">XY</span>.
+</p><table class="lstframe c011"><tr><td class="mouselstlisting"><span class="c001">#<br>
+# Name: spams.calcXY<br>
+#<br>
+# Usage: spams.calcXY(X,Y)<br>
+#<br>
+# Description:<br>
+#     Compute Z=XY using the BLAS library used by SPAMS.<br>
+#<br>
+# Inputs:<br>
+#       X:  double m x n matrix<br>
+#       Y:  double n x p matrix   <br>
+#<br>
+# Output:<br>
+#       Z: double m x p matrix <br>
+#<br>
+# Authors:<br>
+# Julien MAIRAL, 2009 (spams, matlab interface and documentation)<br>
+# Jean-Paul CHIEZE 2011-2012 (R interface)<br>
+#</span></td></tr>
+</table><p>
+The following piece of code illustrates how to use this function.
+The following piece of code contains usage examples:
+</p><table class="lstframe c011"><tr><td class="mouselstlisting">library(spams)<br>
+X = matrix(rnorm(64 * 200),nrow = 64,ncol = 200,byrow = FALSE)<br>
+Y = matrix(rnorm(200 * 20000),nrow = 200,ncol = 20000,byrow = FALSE)<br>
+spams.calcXY(X,Y)</td></tr>
+</table>
+<h3 class="subsection" id="sec54">7.6  Function spams.calcXYt</h3>
+<p>
+For two input matrices <span class="c009">X</span> and <span class="c009">Y</span>, this function returns <span class="c009">XY</span><sup><span class="c007">T</span></sup>.
+</p><table class="lstframe c011"><tr><td class="mouselstlisting"><span class="c001">#<br>
+# Name: spams.calcXYt<br>
+#<br>
+# Usage: spams.calcXYt(X,Y)<br>
+#<br>
+# Description:<br>
+#     Compute Z=XY' using the BLAS library used by SPAMS.<br>
+#<br>
+# Inputs:<br>
+#       X:  double m x n matrix<br>
+#       Y:  double p x n matrix   <br>
+#<br>
+# Output:<br>
+#       Z: double m x p matrix <br>
+#<br>
+# Authors:<br>
+# Julien MAIRAL, 2009 (spams, matlab interface and documentation)<br>
+# Jean-Paul CHIEZE 2011-2012 (R interface)<br>
+#</span></td></tr>
+</table><p>
+The following piece of code illustrates how to use this function.
+The following piece of code contains usage examples:
+</p><table class="lstframe c011"><tr><td class="mouselstlisting">library(spams)<br>
+X = matrix(rnorm(64 * 200),nrow = 64,ncol = 200,byrow = FALSE)<br>
+Y = matrix(rnorm(200 * 20000),nrow = 20000,ncol = 200,byrow = FALSE)<br>
+spams.calcXYt(X,Y)</td></tr>
+</table>
+<h3 class="subsection" id="sec55">7.7  Function spams.calcXtY</h3>
+<p>
+For two input matrices <span class="c009">X</span> and <span class="c009">Y</span>, this function returns <span class="c009">X</span><sup><span class="c007">T</span></sup><span class="c009">Y</span>.
+</p><table class="lstframe c011"><tr><td class="mouselstlisting"><span class="c001">#<br>
+# Name: spams.calcXtY<br>
+#<br>
+# Usage: spams.calcXtY(X,Y)<br>
+#<br>
+# Description:<br>
+#     Compute Z=X'Y using the BLAS library used by SPAMS.<br>
+#<br>
+# Inputs:<br>
+#       X:  double n x m matrix<br>
+#       Y:  double n x p matrix   <br>
+#<br>
+# Output:<br>
+#       Z: double m x p matrix <br>
+#<br>
+# Authors:<br>
+# Julien MAIRAL, 2009 (spams, matlab interface and documentation)<br>
+# Jean-Paul CHIEZE 2011-2012 (R interface)<br>
+#</span></td></tr>
+</table><p>
+The following piece of code illustrates how to use this function.
+The following piece of code contains usage examples:
+</p><table class="lstframe c011"><tr><td class="mouselstlisting">library(spams)<br>
+X = matrix(rnorm(64 * 200),nrow = 200,ncol = 64,byrow = FALSE)<br>
+Y = matrix(rnorm(200 * 20000),nrow = 200,ncol = 20000,byrow = FALSE)<br>
+spams.calcXtY(X,Y)</td></tr>
+</table>
+<h3 class="subsection" id="sec56">7.8  Function spams.invSym</h3>
+<p>
+For an input symmetric matrices <span class="c009">A</span> in ℝ<sup><span class="c007">n</span> × <span class="c007">n</span></sup>, this function returns <span class="c009">A</span><sup>−1</sup>.
+</p><table class="lstframe c011"><tr><td class="mouselstlisting"><span class="c001">#<br>
+# Name: spams.invSym<br>
+#<br>
+# Usage: spams.invSym(A)<br>
+#<br>
+# Description:<br>
+#     returns the inverse of a symmetric matrix A<br>
+#<br>
+# Inputs:<br>
+#       A:  double n x n matrix   <br>
+#<br>
+# Output:<br>
+#       B: double n x n matrix <br>
+#<br>
+# Authors:<br>
+# Julien MAIRAL, 2009 (spams, matlab interface and documentation)<br>
+# Jean-Paul CHIEZE 2011-2012 (R interface)<br>
+#</span></td></tr>
+</table><p>
+The following piece of code illustrates how to use this function.
+The following piece of code contains usage examples:
+</p><table class="lstframe c011"><tr><td class="mouselstlisting">library(spams)<br>
+A = matrix(runif(1000 * 1000,0,1),nrow = 1000,ncol = 1000,byrow = FALSE)<br>
+A = t(A) %*% A<br>
+spams.invSym(A)</td></tr>
+</table>
+<h3 class="subsection" id="sec57">7.9  Function spams.normalize</h3>
+<table class="lstframe c011"><tr><td class="mouselstlisting"><span class="c001">#<br>
+# Name: spams.normalize<br>
+#<br>
+# Usage: spams.normalize(X)<br>
+#<br>
+# Description:<br>
+#     rescale the columns of X so that they have<br>
+#        unit l2-norm.<br>
+#<br>
+# Inputs:<br>
+#       X:  double m x n matrix   <br>
+#<br>
+# Output:<br>
+#       Y: double m x n matrix <br>
+#<br>
+# Authors:<br>
+# Julien MAIRAL, 2010 (spams, matlab interface and documentation)<br>
+# Jean-Paul CHIEZE 2011-2012 (R interface)<br>
+#</span></td></tr>
+</table><p>
+The following piece of code illustrates how to use this function.
+The following piece of code contains usage examples:
+</p><table class="lstframe c011"><tr><td class="mouselstlisting">library(spams)<br>
+A = matrix(runif(100 * 1000,0,1),nrow = 100,ncol = 1000)<br>
+y2 = spams.normalize(A)</td></tr>
+</table>
+<h3 class="subsection" id="sec58">7.10  Function spams.sort</h3>
+<table class="lstframe c011"><tr><td class="mouselstlisting"><span class="c001">#<br>
+# Name: spams.sort<br>
+#<br>
+# Usage: spams.sort(X,mode=T)<br>
+#<br>
+# Description:<br>
+#     sort the elements of X using quicksort<br>
+#<br>
+# Inputs:<br>
+#       X:  double vector of size n<br>
+#       mode: false for decreasing order (true by default)<br>
+#<br>
+# Output:<br>
+#       Y: double  vector of size n<br>
+#<br>
+# Authors:<br>
+# Julien MAIRAL, 2010 (spams, matlab interface and documentation)<br>
+# Jean-Paul CHIEZE 2011-2012 (R interface)<br>
+#</span></td></tr>
+</table><p>
+The following piece of code illustrates how to use this function.
+The following piece of code contains usage examples:
+</p><table class="lstframe c011"><tr><td class="mouselstlisting">library(spams)<br>
+x = rnorm(2000000,0,1)<br>
+spams.sort(x,TRUE)</td></tr>
+</table>
+<h3 class="subsection" id="sec59">7.11  Function displayPatches</h3>
+<p>
+Print to the screen a matrix containing as columns image patches.</p>
+<h3 class="subsection" id="sec60">7.12  Function spams.countPathsDAG</h3>
+<p>
+This function counts the number of paths in a DAG using dynamic programming.
+</p><table class="lstframe c011"><tr><td class="mouselstlisting"><span class="c001">#<br>
+# The R function is not yet implemented.<br>
+#</span></td></tr>
+</table><p>
+The following piece of code illustrates how to use this function.</p>
+<h3 class="subsection" id="sec61">7.13  Function spams.removeCyclesGraph</h3>
+<p>
+One heuristic to remove cycles from a graph.
+</p><table class="lstframe c011"><tr><td class="mouselstlisting"><span class="c001">#<br>
+# The R function is not yet implemented.<br>
+#</span></td></tr>
+</table><p>
+The following piece of code illustrates how to use this function.</p>
+<h3 class="subsection" id="sec62">7.14  Function spams.countConnexComponents</h3>
+<p>
+Count the number of connected components of a subgraph from a graph.
+</p><table class="lstframe c011"><tr><td class="mouselstlisting"><span class="c001">#<br>
+# The R function is not yet implemented.<br>
+#</span></td></tr>
+</table><p>
+The following piece of code illustrates how to use this function.</p>
+<h3 class="subsection" id="sec63">7.15  Function spams.graphOfGroupStruct</h3>
+<table class="lstframe c011"><tr><td class="mouselstlisting"><span class="c001">#<br>
+# Name: spams.graphOfGroupStruct<br>
+#<br>
+# Usage: spams.graphOfGroupStruct(gstruct)<br>
+#<br>
+# Description:<br>
+#     converts a group structure into the graph structure<br>
+#    used by spams.proximalGraph, spams.fistaGraph or spams.structTrainDL<br>
+#<br>
+# Inputs:<br>
+#       gstruct: the structure of groups as a list, one element per node<br>
+#     an element is itself a 4 elements list:<br>
+#       nodeid (&gt;= 0), weight (double), array of vars associated to the node,<br>
+#       array of children (nodeis's)<br>
+#<br>
+# Output:<br>
+#       graph: struct (see documentation of spams.proximalGraph)<br>
+#<br>
+# Authors:<br>
+# Jean-Paul CHIEZE, 2012<br>
+#</span></td></tr>
+</table>
+<h3 class="subsection" id="sec64">7.16  Function spams.groupStructOfString</h3>
+<table class="lstframe c011"><tr><td class="mouselstlisting"><span class="c001">#<br>
+# Name: spams.groupStructOfString<br>
+#<br>
+# Usage: spams.groupStructOfString(s)<br>
+#<br>
+# Description:<br>
+#     decode a multi-line string describing "simply" the structure of groups<br>
+#    of variables needed by spams.proximalGraph, spams.proximalTree, spams.fistaGraph,<br>
+#    spams.fistaTree and spams.structTrainDL and builds the corresponding group structure.<br>
+#    Each line describes a group of variables as a node of a tree.<br>
+#    It has up to 4 fields separated by spaces:<br>
+#        node-id node-weight [variables-list] -&gt; children-list<br>
+#    Let's define Ng = number of groups, and Nv = number of variables.<br>
+#    node-id must be in the range (0 - Ng-1), and there must be Ng nodes<br>
+#    weight is a float<br>
+#    variables-list : a space separated list of integers, maybe empty,<br>
+#         but '[' and '] must be present. Numbers in the range (0 - Nv-1)<br>
+#    children-list : a space separated list of node-id's<br>
+#        If the list is empty, '-&gt;' may be omitted.<br>
+#    The data must obey some rules : <br>
+#        - A group contains the variables of the corresponding node and of the whole subtree.<br>
+#        - Variables attached to a node are those that are not int the subtree.<br>
+#        - If the data destination is a Graph, there may be several independant trees,<br>
+#          and a varibale may appear in several trees.<br>
+#    If the destination is a Tree, there must be only one tree, the root node<br>
+#    must have id == 0 and each variable must appear only once.<br>
+#<br>
+# Inputs:<br>
+#       s:  the multi-lines string<br>
+#<br>
+# Output:<br>
+#       groups: list, one element for each node<br>
+#                an element is itsel a 4 elements list:<br>
+#           nodeid (int &gt;= 0), weight (double), array of vars of the node,<br>
+#                array of children (nodeid's)<br>
+#<br>
+# Authors:<br>
+# Jean-Paul CHIEZE, 2012<br>
+#</span></td></tr>
+</table>
+<h3 class="subsection" id="sec65">7.17  Function spams.readGroupStruct</h3>
+<table class="lstframe c011"><tr><td class="mouselstlisting"><span class="c001">#<br>
+# Name: spams.readGroupStruct<br>
+#<br>
+# Usage: spams.readGroupStruct(file)<br>
+#<br>
+# Description:<br>
+#     reads a text file describing "simply" the structure of groups<br>
+#    of variables needed by spams.proximalGraph, spams.proximalTree, spams.fistaGraph,<br>
+#    spams.fistaTree and spams.structTrainDL and builds the corresponding group structure.<br>
+#    weight is a float<br>
+#    variables-list : a space separated list of integers, maybe empty,<br>
+#        but '[' and '] must be present. Numbers in the range (0 - Nv-1)<br>
+#    children-list : a space separated list of node-id's<br>
+#        If the list is empty, '-&gt;' may be omitted.<br>
+#    The data must obey some rules : <br>
+#        - A group contains the variables of the corresponding node and of the whole subtree.<br>
+#        - Variables attached to a node are those that are not int the subtree.<br>
+#        - If the data destination is a Graph, there may be several independant trees,<br>
+#           and a varibale may appear in several trees.<br>
+#    If the destination is a Tree, there must be only one tree, the root node<br>
+#        must have id == 0 and each variable must appear only once.<br>
+#<br>
+# Inputs:<br>
+#       file:  the file name<br>
+#<br>
+# Output:<br>
+#       groups: list, one element for each node<br>
+#                an element is itsel a 4 elements list:<br>
+#          nodeid (int &gt;= 0), weight (double), array of vars of the node,<br>
+#                array of children (nodeid's)<br>
+#<br>
+# Authors:<br>
+# Jean-Paul CHIEZE, 2012<br>
+#</span></td></tr>
+</table>
+<h3 class="subsection" id="sec66">7.18  Function spams.treeOfGroupStruct</h3>
+<table class="lstframe c011"><tr><td class="mouselstlisting"><span class="c001">#<br>
+# Name: spams.treeOfGroupStruct<br>
+#<br>
+# Usage: spams.treeOfGroupStruct(gstruct)<br>
+#<br>
+# Description:<br>
+#     converts a group structure into the tree structure<br>
+#    used by spams.proximalTree, spams.fistaTree or spams.structTrainDL<br>
+#<br>
+# Inputs:<br>
+#       gstruct: the structure of groups as a list, one element per node<br>
+#     an element is itself a 4 lements list:<br>
+#       nodeid (&gt;= 0), weight (double), array of vars associated to the node,<br>
+#       array of children (nodeis's)<br>
+#<br>
+# Output:<br>
+#       permutations: permutation vector that must be applied to the result of the<br>
+#               programm using the tree. Empty if no permutation is needed.<br>
+#       tree: named list (see documentation of spams.proximalTree)<br>
+#       nbvars : number of variables in the tree<br>
+#       res &lt;- spams.treeOfGroupStruct(gstruct)<br>
+#       permutations = res[[1]]<br>
+#       tree = res[[2]]<br>
+#       nbvars = res[[3]]<br>
+#<br>
+# Authors:<br>
+# Jean-Paul CHIEZE, 2012<br>
+#</span></td></tr>
+</table>
+<h3 class="subsection" id="sec67">7.19  Function spams.simpleGroupTree</h3>
+<table class="lstframe c011"><tr><td class="mouselstlisting"><span class="c001">#<br>
+# Name: spams.simpleGroupTree<br>
+#<br>
+# Usage: spams.simpleGroupTree(degrees)<br>
+#<br>
+# Description:<br>
+#     makes a structure representing a tree given the<br>
+#   degree of each level.<br>
+#<br>
+# Inputs:<br>
+#       degrees:  int vector; degrees(i) is the number of children of each node at level i<br>
+#<br>
+# Output:<br>
+#       group_struct: list, one element for each node<br>
+#                an element is itsel a 4 elements list :<br>
+#           nodeid (int &gt;= 0), weight (double), array of vars attached to the node<br>
+#                  (here equal to [nodeid]), array of children (nodeid's)<br>
+#<br>
+# Authors:<br>
+# Jean-Paul CHIEZE, 2012<br>
+#</span></td></tr>
+</table>
+<hr>
+<a href="doc_spams007.html"><img src="previous_motif.gif" alt="Previous"></a>
+<a href="index.html"><img src="contents_motif.gif" alt="Up"></a>
+<a href="doc_spams009.html"><img src="next_motif.gif" alt="Next"></a>
+</body>
+</html>
