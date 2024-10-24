@@ -145,7 +145,7 @@ spams.lasso <- function(X,D= NULL,Q = NULL,q = NULL,return_reg_path = FALSE,L= -
   indices = x[[1]][[2]]
   data = x[[1]][[3]]
   shape = x[[1]][[4]]
-  alpha = sparseMatrix(i = indices, p = indptr, x = data,dims = shape, index1 = FALSE)
+  alpha = sparseMatrix(i = indices, p = indptr, x = data, dims = as.numeric(shape), index1 = FALSE)
   if (return_reg_path)
     return (list(alpha,path))
   else
@@ -170,7 +170,7 @@ spams.lassoMask <- function(X,D,B,L= -1,lambda1= NULL,lambda2= 0.,
   data = x[[3]]
   shape = x[[4]]
   cat("LASSO : ", length(shape),"\n")
-  alpha = sparseMatrix(i = indices, p = indptr, x = data,dims = shape, index1 = FALSE)
+  alpha = sparseMatrix(i = indices, p = indptr, x = data, dims = as.numeric(shape), index1 = FALSE)
   return(alpha)
 }
 
@@ -190,7 +190,7 @@ spams.lassoWeighted <- function(X,D,W,L= -1,lambda1= NULL,
   indices = x[[2]]
   data = x[[3]]
   shape = x[[4]]
-  alpha = sparseMatrix(i = indices, p = indptr, x = data,dims = shape, index1 = FALSE)
+  alpha = sparseMatrix(i = indices, p = indptr, x = data, dims = as.numeric(shape), index1 = FALSE)
   return(alpha)
 }
 
@@ -229,7 +229,7 @@ spams.omp <- function(X,D,L = NULL,eps = NULL,lambda1 = NULL,return_reg_path = F
   indices = x[[1]][[2]]
   data = x[[1]][[3]]
   shape = x[[1]][[4]]
-  alpha = sparseMatrix(i = indices, p = indptr, x = data,dims = shape, index1 = FALSE)
+  alpha = sparseMatrix(i = indices, p = indptr, x = data, dims = as.numeric(shape), index1 = FALSE)
   if (return_reg_path)
     return (list(alpha,path))
   else
@@ -268,7 +268,7 @@ spams.ompMask <- function(X,D,B,L = NULL,eps = NULL,lambda1 = NULL,return_reg_pa
   indices = x[[1]][[2]]
   data = x[[1]][[3]]
   shape = x[[1]][[4]]
-  alpha = sparseMatrix(i = indices, p = indptr, x = data,dims = shape, index1 = FALSE)
+  alpha = sparseMatrix(i = indices, p = indptr, x = data, dims = as.numeric(shape), index1 = FALSE)
   if (return_reg_path)
     return (list(alpha,path))
   else
@@ -284,7 +284,7 @@ spams.cd  <- function(X,D,A0,lambda1 = NULL,mode= 'PENALTY',itermax=100,tol = 0.
   indices = x[[2]]
   data = x[[3]]
   shape = x[[4]]
-  alpha = sparseMatrix(i = indices, p = indptr, x = data,dims = shape, index1 = FALSE)
+  alpha = sparseMatrix(i = indices, p = indptr, x = data, dims = as.numeric(shape), index1 = FALSE)
   return(alpha)
 
 }
@@ -298,7 +298,7 @@ spams.somp  <- function(X,D,list_groups,L = NULL,eps = 0.,numThreads = -1){
   indices = x[[2]]
   data = x[[3]]
   shape = x[[4]]
-  alpha = sparseMatrix(i = indices, p = indptr, x = data,dims = shape, index1 = FALSE)
+  alpha = sparseMatrix(i = indices, p = indptr, x = data, dims = as.numeric(shape), index1 = FALSE)
   return(alpha)
 
 }
@@ -604,12 +604,12 @@ spams.archetypalAnalysis <- function(X,p = 10, Z0 = NULL, returnAB = FALSE, robu
       indices = x[[2]][[2]]
       data = x[[2]][[3]]
       shape = x[[2]][[4]]
-      A = sparseMatrix(i = indices, p = indptr, x = data,dims = shape, index1 = FALSE)
+      A = sparseMatrix(i = indices, p = indptr, x = data, dims = as.numeric(shape), index1 = FALSE)
       indptr2 = x[[3]][[1]]
       indices2 = x[[3]][[2]]
       data2 = x[[3]][[3]]
       shape2 = x[[3]][[4]]
-      B = sparseMatrix(i = indices2, p = indptr2, x = data2,dims = shape2, index1 = FALSE)
+      B = sparseMatrix(i = indices2, p = indptr2, x = data2, dims = as.numeric(shape2), index1 = FALSE)
       return (list(Z,A,B))
    } else {
       return(Z)
@@ -622,7 +622,7 @@ spams.decompSimplex <- function(X, Z, computeXtX = FALSE, numThreads = -1) {
    indices = x[[2]]
    data = x[[3]]
    shape = x[[4]]
-   A = sparseMatrix(i = indices, p = indptr, x = data,dims = shape, index1 = FALSE)
+   A = sparseMatrix(i = indices, p = indptr, x = data, dims = as.numeric(shape), index1 = FALSE)
    return(A)
 }
 
@@ -756,12 +756,12 @@ spams.graphOfGroupStruct <- function(gstruct) {
   indices = lg[[2]]
   data = lg[[3]]
   shape = lg[[4]]
-  groups = sparseMatrix(i = indices, p = indptr, x = data,dims = shape, index1 = FALSE)
+  groups = sparseMatrix(i = indices, p = indptr, x = data, dims = as.numeric(shape), index1 = FALSE)
   indptr = lv[[1]]
   indices = lv[[2]]
   data = lv[[3]]
   shape = lv[[4]]
-  groups_var = sparseMatrix(i = indices, p = indptr, x = data,dims = shape, index1 = FALSE)
+  groups_var = sparseMatrix(i = indices, p = indptr, x = data, dims = as.numeric(shape), index1 = FALSE)
   graph = list('eta_g'= x[[1]],'groups' = groups,'groups_var' = groups_var)
   return(graph)
 }
@@ -777,7 +777,7 @@ spams.treeOfGroupStruct <- function(gstruct) {
   indices = lg[[2]]
   data = lg[[3]]
   shape = lg[[4]]
-  groups = sparseMatrix(i = indices, p = indptr, x = data,dims = shape, index1 = FALSE)
+  groups = sparseMatrix(i = indices, p = indptr, x = data, dims = as.numeric(shape), index1 = FALSE)
   tree = list('eta_g'= eta_g,'groups' = groups,'own_variables' = own_variables,
                 'N_own_variables' = N_own_variables)
   return (list(perm,tree,nbvars))
