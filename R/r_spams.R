@@ -145,7 +145,7 @@ spams.lasso <- function(X,D= NULL,Q = NULL,q = NULL,return_reg_path = FALSE,L= -
   indices = x[[1]][[2]]
   data = x[[1]][[3]]
   shape = x[[1]][[4]]
-  alpha = sparseMatrix(i = indices, p = indptr, x = data,dims = shape, index1 = FALSE)
+  alpha = sparseMatrix(i = indices, p = indptr, x = data, dims = as.numeric(shape), index1 = FALSE)
   if (return_reg_path)
     return (list(alpha,path))
   else
